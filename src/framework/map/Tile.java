@@ -23,6 +23,16 @@ public class Tile {
         this.y=y;
     }
 
+    public Tile(int tileId, int x, int y) {
+        this.tileID=tileId;
+        this.x=x;
+        this.y=y;
+        this.N=new Wall(wallType.EMPTY,Direction.NORTH,x,y);
+        this.E=new Wall(wallType.EMPTY,Direction.EAST,x,y);
+        this.S=new Wall(wallType.EMPTY,Direction.SOUTH,x,y);
+        this.W=new Wall(wallType.EMPTY,Direction.WEST,x,y);
+    }
+
     public Wall getN() {
         return N;
     }

@@ -1,6 +1,8 @@
 package framework.gui;
 
 import framework.map.Map;
+import framework.map.Tile;
+import framework.map.Wall;
 import framework.map.wallType;
 
 import java.awt.*;
@@ -11,25 +13,26 @@ import java.util.ArrayList;
 import javax.swing.*;
 
 public class guiPanel extends JPanel {
+    private final Map theMap;
 
-    public static void main(String[] f) {
+    /*public static void main(String[] f) {
         JFrame frame = new JFrame("Track Editor Alpha 0.1");
         frame.getContentPane().add(new guiPanel());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 800);
         frame.setVisible(true);
         new controlPanel();
-    }
+    }*/
 
     private int width = 800, height = 800;
 
-    public guiPanel() {
-        Map.getMap().reset();
+    public guiPanel(Map theMap) {
+        this.theMap = theMap;
 
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                repaint();
+                System.out.println("Mouse pressed at: " + e.getX() + ", " + e.getY());
             }
         });
         addMouseMotionListener(new MouseMotionAdapter() {
@@ -45,7 +48,7 @@ public class guiPanel extends JPanel {
 
         g2.setFont(new Font("TimesRoman", Font.BOLD, 30));
         g2.drawString("Robot Tour Track Editor Alpha 0.1", 70, 50);
-        g2.setColor(Color.BLACK);
+        g2.setColor(Color.GRAY);
         g2.setStroke(new BasicStroke(10));
         g2.drawRect(90, 90, 600, 600);
 
@@ -69,22 +72,45 @@ public class guiPanel extends JPanel {
                 counter++;
             }
         }
+
+        g2.setStroke(new BasicStroke(10));
+        Wall N,E,S,W;
+        Tile tempTile;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                tempTile = theMap.getTileMap()[i][j];
+                N = tempTile.getN();
+                E = tempTile.getE();
+                S = tempTile.getS();
+                W = tempTile.getW();
+
+                g2.setStroke(new BasicStroke(10));
+
+                g2.setColor(processWall(N.getType()));
+                g2.drawLine(N.getxLit(),N.getyLit(),N.getxLit()+150,N.getyLit());
+
+                g2.setColor(processWall(E.getType()));
+                g2.drawLine(E.getxLit(),E.getyLit(),E.getxLit(),E.getyLit()+150);
+
+                g2.setColor(processWall(S.getType()));
+                g2.drawLine(S.getxLit(),S.getyLit(),S.getxLit()+150,S.getyLit());
+
+
+                g2.setColor(processWall(W.getType()));
+                g2.drawLine(W.getxLit(),W.getyLit(),W.getxLit(),W.getyLit()-150);
+
+            }
+        }
     }
 
-    private Color processTile(wallType w) {
-        switch (w) {
-            case EMPTY:
-                return Color.WHITE;
-            case GRIDLINE:
-                return Color.GRAY;
-            case WOOD:
-                return Color.ORANGE;
-            case BOUNDARY:
-                return Color.RED;
-                case SPECIAL:
-                    return Color.GREEN;
-            default:
-                return Color.WHITE;
-        }
+    private Color processWall(wallType w) {
+        return switch (w) {
+            case EMPTY -> Color.WHITE;
+            case GRIDLINE -> Color.GRAY;
+            case WOOD -> Color.ORANGE;
+            case BOUNDARY -> Color.RED;
+            case SPECIAL -> Color.GREEN;
+            default -> Color.MAGENTA;
+        };
     }
 }

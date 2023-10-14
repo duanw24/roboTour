@@ -12,7 +12,8 @@ public class Console {
         return theConsole;
     }
 
-    public void log(String s, msgType m) {
+    public static void log(String s, msgType m) {
         System.out.println(m.toString() + ": " + s);
     }
+
 }

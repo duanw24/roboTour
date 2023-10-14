@@ -3,25 +3,23 @@ package framework.map;
 import framework.Console;
 
 import java.util.Arrays;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class Map {
-    private static Map theMap = new Map();
+    // SINGLETON TBD
     private String mString;
 
-    private Tile[][] tileMap;
-    private Map() {
-        tileMap = new Tile[4][4];
-        for(int i=0;i<4;i++) {
-            for(int j=0;j<4;j++) {
-                tileMap[i][j]=new Tile(new Wall(wallType.EMPTY,90+150*i,90+150*j,));
-            }
-        }
-        mString="";
+    private Tile[][] tileMap = new Tile[4][4];
+
+    public Tile[][] getTileMap() {
+        return tileMap;
     }
 
-    public static Map getMap() {
-        return theMap;
+    //fills map inst w empty tiles
+    public Map() {
+       reset();
+        Console.log("Initial framework.map.Map created", msgType.SUCCESS);
     }
 
     public void setMap(String mString) {
@@ -32,8 +30,7 @@ public class Map {
         tileMap[x][y] = t;
     }
     public void reset() {
-        tileMap = new Tile[4][4];
-        mString="";
+        readMap("2112:2111:2111:2211.1112:1111:1111:1211.1112:1111:1111:1211.1122:1121:1121:1221");
     }
 
     @Override
@@ -47,12 +44,13 @@ public class Map {
         return temp;
     }
 
-    public static void readMap(String s) {
+    public void readMap(String s) {
         //splits to rows
         String[] split = s.split("\\.");
         System.out.println(Arrays.toString(split));
         int id=0;
         wallType e0, e1, e2, e3;
+        Tile tempTile;
         //iterates over rows
         for(int i=0;i<4;i++) {
             String[] subSplit=split[i].split(":");
@@ -62,8 +60,9 @@ public class Map {
                 e1=process(subSplit[j].charAt(1));
                 e2=process(subSplit[j].charAt(2));
                 e3=process(subSplit[j].charAt(3));
-                Map.getMap().setTile(j,i,new Tile(e0,e1,e2,e3,id,j,i));
-                Console.getConsole().log("New framework.map.Tile created at "+j+":"+i, msgType.SUCCESS);
+                tempTile = new Tile(new Wall(e0,Direction.NORTH,j,i),new Wall(e1,Direction.EAST,j,i),new Wall(e2,Direction.SOUTH,j,i),new Wall(e3,Direction.WEST,j,i),id,j,i);
+                setTile(j,i,tempTile);
+                Console.log("New framework.map.Tile created at "+j+":"+i + " from text", msgType.SUCCESS);
             }
         }
 
@@ -76,9 +75,9 @@ public class Map {
             case '1':
                 return wallType.GRIDLINE;
             case '2':
-                return wallType.WOOD;
-            case '3':
                 return wallType.BOUNDARY;
+            case '3':
+                return wallType.WOOD;
             case '4':
                 return wallType.SPECIAL;
             default:

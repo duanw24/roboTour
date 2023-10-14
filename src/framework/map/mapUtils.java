@@ -5,6 +5,10 @@ import framework.Console;
 import java.util.Arrays;
 
 public class mapUtils {
+    /*
+            ** DEPRECATED CLASS **
+      * IMPLEMENTED BY framework.map.Map *
+
     public static void readMap(String s) {
         //splits to rows
         String[] split = s.split("\\.");
@@ -47,4 +51,5 @@ public class mapUtils {
                 }
         }
     }
+     */
 }
