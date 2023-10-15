@@ -13,5 +13,11 @@ public class Robot {
         this.start = start;
     }
 
-    
+    public void setPos(Point p) {
+        this.pos=new Point(p);
+    }
+
+    public Point getPos() {
+        return pos;
+    }
 }

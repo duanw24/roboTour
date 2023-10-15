@@ -1,7 +1,5 @@
 package framework.map;
 
-import javax.annotation.processing.SupportedSourceVersion;
-
 public class Wall {
     private wallType type;
 
@@ -18,6 +16,9 @@ public class Wall {
     }
     public int getyLit() {
         return yLit;
+    }
+    public Direction getDir() {
+        return dir;
     }
     private Direction dir;
 
@@ -39,10 +40,10 @@ public class Wall {
                 this.xLit=90+150*xCoord;
                 this.yLit=240+150*yCoord;
             }
-            //fuck it west gonna be flipped now
+            //unflipped west to simplify raycasting
             case WEST -> {
                 this.xLit=90+150*xCoord;
-                this.yLit=240+150*yCoord;
+                this.yLit=90+150*yCoord;
             }
         }
     }

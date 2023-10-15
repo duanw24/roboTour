@@ -1,5 +1,8 @@
 package framework.map;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Tile {
     private Wall N;
     private Wall E;
@@ -49,5 +52,14 @@ public class Tile {
     @Override
     public String toString() {
         return N.toString()+E.toString()+S.toString()+W.toString();
+    }
+
+    public List getWalls() {
+        List<Wall> wList = new ArrayList<Wall>();
+        wList.add(N);
+        wList.add(E);
+        wList.add(S);
+        wList.add(W);
+        return wList;
     }
 }

@@ -5,5 +5,7 @@ public enum wallType {
     GRIDLINE,
     BOUNDARY,
     WOOD,
+    GATE,
+    OBSTACLE,
     SPECIAL
 }

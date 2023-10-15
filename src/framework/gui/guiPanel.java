@@ -33,6 +33,7 @@ public class guiPanel extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 System.out.println("Mouse pressed at: " + e.getX() + ", " + e.getY());
+                if(e.getX()>=3);
             }
         });
         addMouseMotionListener(new MouseMotionAdapter() {
@@ -97,10 +98,14 @@ public class guiPanel extends JPanel {
 
 
                 g2.setColor(processWall(W.getType()));
-                g2.drawLine(W.getxLit(),W.getyLit(),W.getxLit(),W.getyLit()-150);
+                g2.drawLine(W.getxLit(),W.getyLit(),W.getxLit(),W.getyLit()+150);
 
             }
         }
+
+        //Draws robot
+        g2.setColor(Color.BLUE);
+        g2.setStroke(new BasicStroke(5));
     }
 
     private Color processWall(wallType w) {
@@ -109,7 +114,8 @@ public class guiPanel extends JPanel {
             case GRIDLINE -> Color.GRAY;
             case WOOD -> Color.ORANGE;
             case BOUNDARY -> Color.RED;
-            case SPECIAL -> Color.GREEN;
+            case GATE -> Color.GREEN;
+            case OBSTACLE -> Color.BLACK;
             default -> Color.MAGENTA;
         };
     }
