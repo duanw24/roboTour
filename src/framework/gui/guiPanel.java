@@ -1,9 +1,7 @@
 package framework.gui;
 
-import framework.map.Map;
-import framework.map.Tile;
-import framework.map.Wall;
-import framework.map.wallType;
+import framework.map.*;
+import framework.map.tileType;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -13,6 +11,30 @@ import java.util.ArrayList;
 import javax.swing.*;
 
 public class guiPanel extends JPanel {
+
+    public static void main(String[] guiTests) {
+        System.out.println(processXYt(new Point(90,90)));
+    }
+
+    /*
+    * Tile 0: 90,90
+    * Tile 1: 240,90
+    * Tile 2: 390,90
+    * Tile 3: 540,90
+    * Tile 4: 90,240
+    * Tile 5: 240,240
+    * Tile 6: 390,240
+    * Tile 7: 540,240
+    * Tile 8: 90,390
+    * Tile 9: 240,390
+    * Tile 10: 390,390
+    * Tile 11: 540,390
+    * Tile 12: 90,540
+    * Tile 13: 240,540
+    * Tile 14: 390,540
+    * Tile 15: 540,540
+    */
+
     private final Map theMap;
 
     /*public static void main(String[] f) {
@@ -32,8 +54,9 @@ public class guiPanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                System.out.println("Mouse pressed at: " + e.getX() + ", " + e.getY());
-                if(e.getX()>=3);
+                System.out.println(processXYt(e.getPoint()) + " tileID clicked");
+
+                repaint();
             }
         });
         addMouseMotionListener(new MouseMotionAdapter() {
@@ -42,6 +65,41 @@ public class guiPanel extends JPanel {
                 repaint();
             }
         });
+    }
+
+    private void changeTile(int tileID, tileType toType) {
+
+    }
+
+    private Point PixelProcess(Point point) {
+        return new Point(95+150*(point.x),95+150*(point.y));
+    }
+
+    private static int processXYt(Point point) {
+        /*
+         * Tile 0: 95,95
+         * Tile 1: 245,95
+         * Tile 2: 395,95
+         * Tile 3: 545,95
+         * Tile 4: 95,245
+         * Tile 5: 245,245
+         * Tile 6: 395,245
+         * Tile 7: 545,245
+         * Tile 8: 95,395
+         * Tile 9: 245,395
+         * Tile 10: 395,395
+         * Tile 11: 545,395
+         * Tile 12: 95,545
+         * Tile 13: 245,545
+         * Tile 14: 395,545
+         * Tile 15: 545,545
+         */
+        if(point.x<=95||point.x>=690||point.y<=95||point.y>=690) {
+            return -1;
+        }
+        int dx = Math.round((point.x-95)/150);
+        int dy = Math.round((point.y-95)/150);
+        return dx+dy*4;
     }
 
     public void paint(Graphics g) {
@@ -53,7 +111,7 @@ public class guiPanel extends JPanel {
         g2.setStroke(new BasicStroke(10));
         g2.drawRect(90, 90, 600, 600);
 
-        //vertical gridlines
+        /*//vertical gridlines
         g2.setColor(Color.GRAY);
         g2.setStroke(new BasicStroke(5));
         g2.drawLine(240, 90, 240, 690);
@@ -64,16 +122,9 @@ public class guiPanel extends JPanel {
         g2.drawLine(90, 240, 690, 240);
         g2.drawLine(90, 390, 690, 390);
         g2.drawLine(90, 540, 690, 540);
+       */
 
-//draws the tiles
-        int counter = 0;
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                g2.drawString(String.valueOf(counter), 120 + 150 * j + 50, 120 + 150 * i + 50);
-                counter++;
-            }
-        }
-
+        //draw borders of tiles
         g2.setStroke(new BasicStroke(10));
         Wall N,E,S,W;
         Tile tempTile;
@@ -100,6 +151,32 @@ public class guiPanel extends JPanel {
                 g2.setColor(processWall(W.getType()));
                 g2.drawLine(W.getxLit(),W.getyLit(),W.getxLit(),W.getyLit()+150);
 
+
+            }
+        }
+
+        //draws tiles
+        g2.setStroke(new BasicStroke(10));
+        for(int i=0;i<4;i++) {
+            for(int j=0;j<4;j++) {
+                switch(theMap.getTileMap()[j][i].getTileType()) {
+                    case EMPTY -> g2.setColor(new Color(211,211,211));
+                    case START -> g2.setColor(Color.GREEN);
+                    case TARGET -> g2.setColor(new Color(0, 162, 255));
+                    case GATE -> g2.setColor(new Color(255, 0, 221));
+                }
+                g2.fillRect(95+150*j,95+150*i,140,140);
+            }
+        }
+
+        g2.setColor(Color.BLACK);
+
+        //draws the tile counter
+        int counter = 0;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                g2.drawString(String.valueOf(counter), 120 + 150 * j + 50, 120 + 150 * i + 50);
+                counter++;
             }
         }
 
@@ -111,11 +188,11 @@ public class guiPanel extends JPanel {
     private Color processWall(wallType w) {
         return switch (w) {
             case EMPTY -> Color.WHITE;
-            case GRIDLINE -> Color.GRAY;
+            case GRIDLINE -> Color.BLACK;
             case WOOD -> Color.ORANGE;
             case BOUNDARY -> Color.RED;
             case GATE -> Color.GREEN;
-            case OBSTACLE -> Color.BLACK;
+            case OBSTACLE -> new Color(150,75,0);
             default -> Color.MAGENTA;
         };
     }

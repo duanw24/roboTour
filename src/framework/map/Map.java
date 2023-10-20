@@ -40,7 +40,7 @@ public class Map {
         tileMap[x][y] = t;
     }
     public void reset() {
-        readMap("2112:2111:2111:2211.1112:1111:1111:1211.1112:1111:1111:1211.1122:1121:1121:1221");
+        readMap("2112:2111:2111:2211.1112:1111:1111:1211.1112:1111:1111:1211.1122:1121:1121:1221-0000000000000000");
     }
 
     @Override
@@ -58,21 +58,29 @@ public class Map {
         //0000.0000.0000.0000
         //obstacles are 1.5in x 3.5in x 40.64 CM
         //splits to rows
+
+        //#TODO Add tileTypes
+        String tiles = s.split("-")[1];
+
+        s=s.split("-")[0];
         String[] split = s.split("\\.");
         System.out.println(Arrays.toString(split));
-        int id=0;
         wallType e0, e1, e2, e3;
         Tile tempTile;
+        int id=0;
         //iterates over rows
         for(int i=0;i<4;i++) {
             String[] subSplit=split[i].split(":");
             //iterates over columns
-            for (int j=0;j<4;j++) {
-                e0=process(subSplit[j].charAt(0));
-                e1=process(subSplit[j].charAt(1));
-                e2=process(subSplit[j].charAt(2));
-                e3=process(subSplit[j].charAt(3));
-                tempTile = new Tile(new Wall(e0,Direction.NORTH,j,i),new Wall(e1,Direction.EAST,j,i),new Wall(e2,Direction.SOUTH,j,i),new Wall(e3,Direction.WEST,j,i),id,j,i);
+            for (int j=0;j<4;j++,id++) {
+                e0=processW(subSplit[j].charAt(0));
+                e1=processW(subSplit[j].charAt(1));
+                e2=processW(subSplit[j].charAt(2));
+                e3=processW(subSplit[j].charAt(3));
+                tempTile = new Tile(
+                        //#TODO
+                        processT(tiles.charAt(id))
+                        ,new Wall(e0,Direction.NORTH,j,i),new Wall(e1,Direction.EAST,j,i),new Wall(e2,Direction.SOUTH,j,i),new Wall(e3,Direction.WEST,j,i),id,j,i);
                 setTile(j,i,tempTile);
                 Console.log("New framework.map.Tile created at "+j+":"+i + " from text", msgType.SUCCESS);
             }
@@ -80,7 +88,25 @@ public class Map {
 
     }
 
-    public static wallType process(char c) {
+    public static tileType processT(char c) {
+        switch (c) {
+            case '0' -> {
+                return tileType.EMPTY;
+            }
+            case '2' -> {
+                return tileType.START;
+            }
+            case '3' -> {
+                return tileType.TARGET;
+            }
+            case '1' -> {
+                return tileType.GATE;
+            }
+            default -> {throw new RuntimeException("Unrecognized character " + c);}
+        }
+    }
+
+    public static wallType processW(char c) {
         switch (c) {
             case '0':
                 return wallType.EMPTY;

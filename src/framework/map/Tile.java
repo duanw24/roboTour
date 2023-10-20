@@ -11,12 +11,14 @@ public class Tile {
 
     private int tileID,x,y;
     private specials special;
+    private tileType tileType;
 
     private int xCoord,yCoord;
 
 
-    public Tile(Wall N, Wall E, Wall S, Wall W, int tileID, int x, int y) {
+    public Tile(tileType tileType, Wall N, Wall E, Wall S, Wall W, int tileID, int x, int y) {
         //should go top right down left, counterclockwise!!!
+        this.tileType=tileType;
         this.N=N;
         this.S=S;
         this.E=E;
@@ -48,10 +50,13 @@ public class Tile {
     public Wall getW() {
         return W;
     }
+    public tileType getTileType() {
+        return tileType;
+    }
 
     @Override
     public String toString() {
-        return N.toString()+E.toString()+S.toString()+W.toString();
+        return this.tileType+":"+N.toString()+E.toString()+S.toString()+W.toString();
     }
 
     public List getWalls() {
