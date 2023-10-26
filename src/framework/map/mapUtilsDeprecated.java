@@ -1,10 +1,6 @@
 package framework.map;
 
-import framework.Console;
-
-import java.util.Arrays;
-
-public class mapUtils {
+public class mapUtilsDeprecated {
     /*
             ** DEPRECATED CLASS **
       * IMPLEMENTED BY framework.map.Map *

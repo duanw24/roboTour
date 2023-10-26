@@ -1,3 +1,4 @@
+/*
 package framework.gui;
 
 import framework.map.Map;
@@ -57,4 +58,4 @@ public class controlPanel {
     }
 
 
-}
+}*/

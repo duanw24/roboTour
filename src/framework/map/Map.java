@@ -1,18 +1,37 @@
 package framework.map;
 
 import ai.Robot;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import framework.Console;
+import framework.mapUtils;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class Map {
-    // SINGLETON TBD
+    public static void main(String[] args) {
+        Robot r = new Robot(new Point(0, 0), new Point(0, 0));
+        Map theMap = new Map(r);
+        System.out.println(theMap.toString());
+    }
+
+    // #TODO SERIALIZATION + SINGLETON
     private String mString;
+
+    private static Gson gsonc = new Gson()
+            .newBuilder()
+            .setLenient()
+            .create();
 
     private Tile[][] tileMap = new Tile[4][4];
 
@@ -21,14 +40,14 @@ public class Map {
     }
     Robot theRobot;
 
-    ArrayList<Wall> wList = new ArrayList<Wall>();
+    ArrayList<Wall> oList = new ArrayList<Wall>();
 
     //fills map inst w empty tiles
     public Map(Robot robot) {
+        mapUtils.setMap(this);
         this.theRobot=robot;
-       reset();
-        Arrays.stream(tileMap).forEach(tArray -> Arrays.stream(tArray).forEach(t -> wList.addAll(t.getWalls())));
-        System.out.println(wList.toString());
+        reset();
+        System.out.println(oList.toString());
         Console.log("Initial framework.map.Map created", msgType.SUCCESS);
     }
 
@@ -36,11 +55,12 @@ public class Map {
         this.mString=mString;
     }
 
-    public void setTile(int x, int y, Tile t) {
-        tileMap[x][y] = t;
+    public void setTile(int id, Tile t) {
+        Point p = mapUtils.idToPoint(id);
+        tileMap[p.y][p.x]=t;
     }
     public void reset() {
-        readMap("2112:2111:2111:2211.1112:1111:1111:1211.1112:1111:1111:1211.1122:1121:1121:1221-0000000000000000");
+        readMap(new File("src/resources/maps/emptymap.json"));
     }
 
     @Override
@@ -54,78 +74,49 @@ public class Map {
         return temp;
     }
 
-    public void readMap(String s) {
+    public void readMap(File file) {
         //0000.0000.0000.0000
         //obstacles are 1.5in x 3.5in x 40.64 CM
         //splits to rows
-
-        //#TODO Add tileTypes
-        String tiles = s.split("-")[1];
-
-        s=s.split("-")[0];
-        String[] split = s.split("\\.");
-        System.out.println(Arrays.toString(split));
-        wallType e0, e1, e2, e3;
-        Tile tempTile;
+        try {
+            BufferedReader bfr = new BufferedReader(new FileReader(file));
+            String temp = bfr.lines().collect(Collectors.joining("\n"));
+            System.out.println(temp);
+        JsonObject jsO = JsonParser.parseString(temp).getAsJsonObject();
+        String[] split = jsO.get("tiles").getAsString().split("\\.");
         int id=0;
-        //iterates over rows
         for(int i=0;i<4;i++) {
-            String[] subSplit=split[i].split(":");
-            //iterates over columns
-            for (int j=0;j<4;j++,id++) {
-                e0=processW(subSplit[j].charAt(0));
-                e1=processW(subSplit[j].charAt(1));
-                e2=processW(subSplit[j].charAt(2));
-                e3=processW(subSplit[j].charAt(3));
-                tempTile = new Tile(
-                        //#TODO
-                        processT(tiles.charAt(id))
-                        ,new Wall(e0,Direction.NORTH,j,i),new Wall(e1,Direction.EAST,j,i),new Wall(e2,Direction.SOUTH,j,i),new Wall(e3,Direction.WEST,j,i),id,j,i);
-                setTile(j,i,tempTile);
-                Console.log("New framework.map.Tile created at "+j+":"+i + " from text", msgType.SUCCESS);
+            for(int j=0;j<4;j++,id++) {
+                tileMap[j][i]=mapUtils.processT(id,split[i].charAt(j),j,i);
             }
         }
-
-    }
-
-    public static tileType processT(char c) {
-        switch (c) {
-            case '0' -> {
-                return tileType.EMPTY;
-            }
-            case '2' -> {
-                return tileType.START;
-            }
-            case '3' -> {
-                return tileType.TARGET;
-            }
-            case '1' -> {
-                return tileType.GATE;
-            }
-            default -> {throw new RuntimeException("Unrecognized character " + c);}
+        ArrayList<Point> obstacles = new ArrayList<>();
+        JsonArray jsA = jsO.get("obstacles").getAsJsonArray();
+        jsA.iterator().forEachRemaining(t->{
+            obstacles.add(new Point(Integer.parseInt(t.getAsString().split(":")[0]),Integer.parseInt(t.getAsString().split(":")[1])));
+        });
+        obstacles.forEach(t->{
+            Point tempP = mapUtils.processC(t.x);
+            Wall tempW = (new Wall(wallType.OBSTACLE,mapUtils.processD((char) (t.y+'0')), tempP.x, tempP.y));
+            oList.add(tempW);
+            tileMap[tempP.y][tempP.x].setWall(mapUtils.processD((char) (t.y+'0')),new Wall(wallType.OBSTACLE,mapUtils.processD((char) (t.y+'0')), tempP.x, tempP.y));
+        });
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public static wallType processW(char c) {
-        switch (c) {
-            case '0':
-                return wallType.EMPTY;
-            case '1':
-                return wallType.GRIDLINE;
-            case '2':
-                return wallType.BOUNDARY;
-            case '3':
-                return wallType.WOOD;
-            case '4':
-                return wallType.GATE;
-            default:
-                try {
-                    throw new Exception("Unrecognized character " + c);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-        }
+    public void changeTileType(int tileID) {
+        Point p = mapUtils.idToPoint(tileID);
+        System.out.println(p.toString());
+        Tile temp = mapUtils.getTile(p.x,p.y);
+        setTile(temp.getTileID(),mapUtils.regenerateTile(temp.getTileID(),mapUtils.getNextTileType(temp.getTileType())));
     }
+
+
+
+
+
 
     public boolean moveRobot(Point p) {
         theRobot.setPos(p);
@@ -134,7 +125,8 @@ public class Map {
 
     public boolean isLegal(Point end) {
         //iterative raycast check (line intersection)
-        for(Wall wall : wList) {
+        if(end.x>=50||end.x<=0||end.y>=50||end.y<=0) {System.out.println("out of bounds dumbass");return false;}
+        for(Wall wall : oList) {
             if(wall.getType().equals(wallType.OBSTACLE)) {
                 Line2D l1 = new Line2D.Float(theRobot.getPos(),end);
                 Line2D l2;
@@ -146,8 +138,8 @@ public class Map {
                     throw new RuntimeException("Unrecognized direction");
                 }
                 if(l1.intersectsLine(l2)) {return false;}
-                }
             }
-            return true;
         }
+        return true;
+    }
 }

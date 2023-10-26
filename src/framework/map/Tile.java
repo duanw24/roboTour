@@ -1,5 +1,8 @@
 package framework.map;
 
+import framework.mapUtils;
+
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,16 +19,17 @@ public class Tile {
     private int xCoord,yCoord;
 
 
-    public Tile(tileType tileType, Wall N, Wall E, Wall S, Wall W, int tileID, int x, int y) {
+    public Tile(tileType tileType, wallType N, wallType E, wallType S, wallType W, int tileID) {
         //should go top right down left, counterclockwise!!!
         this.tileType=tileType;
-        this.N=N;
-        this.S=S;
-        this.E=E;
-        this.W=W;
+        this.N=new Wall(N,Direction.NORTH,x,y);
+        this.S=new Wall(S,Direction.SOUTH,x,y);
+        this.E=new Wall(E,Direction.EAST,x,y);
+        this.W=new Wall(W,Direction.WEST,x,y);
         this.tileID=tileID;
-        this.x=x;
-        this.y=y;
+        Point tempP = mapUtils.idToPoint(tileID);
+        this.x=tempP.x;
+        this.y=tempP.y;
     }
 
     public Tile(int tileId, int x, int y) {
@@ -53,6 +57,10 @@ public class Tile {
     public tileType getTileType() {
         return tileType;
     }
+    public int getX() {return x;}
+
+    public int getY() {return y;}
+    public int getTileID() {return tileID;}
 
     @Override
     public String toString() {
@@ -66,5 +74,19 @@ public class Tile {
         wList.add(S);
         wList.add(W);
         return wList;
+    }
+
+    public void setWall(Direction dir,Wall wall) {
+        switch(dir) {
+            case NORTH -> {
+                this.N=wall;
+            } case EAST -> {
+                this.E=wall;
+            } case SOUTH -> {
+                this.S=wall;
+            } case WEST -> {
+                this.W=wall;
+            }
+        }
     }
 }
