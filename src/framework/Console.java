@@ -1,6 +1,6 @@
 package framework;
 
-import framework.map.msgType;
+import framework.util.msgType;
 
 public class Console {
     private static Console theConsole = new Console();

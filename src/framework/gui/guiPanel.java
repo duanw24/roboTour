@@ -2,7 +2,6 @@ package framework.gui;
 
 import framework.map.*;
 import framework.map.tileType;
-import framework.map.mapUtilsDeprecated;
 import framework.mapUtils;
 
 import java.awt.*;
@@ -61,8 +60,9 @@ public class guiPanel extends JPanel {
                     System.out.println("out of bounds dumbass");
                     return;
                 }
-                System.out.println("changing "+tileID);
-                theMap.changeTileType(tileID);
+                System.out.println("changing "+tileID+":"+mapUtils.getTile(tileID).getTileType());
+                mapUtils.nextTile(tileID);
+                System.out.println("changed to "+mapUtils.getTile(tileID).getTileType());
                 repaint();
             }
         });
@@ -130,19 +130,22 @@ public class guiPanel extends JPanel {
         //draw borders of tiles
         ArrayList<Tile> deferredTiles = new ArrayList<Tile>();
         g2.setStroke(new BasicStroke(10));
-        for (int y = 0; y < 4; y++) {
-            for (int x = 0; x < 4; x++) {
-                Tile temp = mapUtils.getTile(x,y);
+        for (int i=0;i<16;i++) {
+                Tile temp = mapUtils.getTile(i);
+
+                //draws all special tiles first, defers empty tiles to not cover outlines
                 if(temp.getTileType()!=tileType.EMPTY) {
                     deferredTiles.add(temp);
                     continue;
                 }
-                drawTile(temp,g2, x, y);
-            }
-        }
+                Point tempP = mapUtils.idToPoint(temp.getTileID());
+                drawTile(temp,g2);
 
+            }
+
+        //draw deferred tiles
         deferredTiles.forEach(t->{
-            drawTile(t,g2,t.getX(),t.getY());
+            drawTile(t,g2);
         });
 
         g2.setColor(Color.BLACK);
@@ -172,7 +175,7 @@ public class guiPanel extends JPanel {
         };
     }
 
-    public void drawTile(Tile tile, Graphics2D g2, int x, int y) {
+    public void drawTile(Tile tile, Graphics2D g2) {
         Wall N = tile.getN();
         Wall E = tile.getE();
         Wall S = tile.getS();
@@ -198,7 +201,7 @@ public class guiPanel extends JPanel {
             case TARGET -> g2.setColor(new Color(0, 162, 255));
             case GATE -> g2.setColor(new Color(255, 0, 221));
         }
-        g2.fillRect(95+150*x,95+150*y,140,140);
+        g2.fillRect(95+150*tile.getX(),95+150*tile.getY(),140,140);
 
     }
 }

@@ -1,4 +1,4 @@
-package framework.map;
+package framework.util;
 
 public enum msgType {
     WARNING,

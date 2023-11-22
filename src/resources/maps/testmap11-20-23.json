@@ -1,0 +1,17 @@
+{
+  "HOW TO USE THIS FILE": "For tiles, 0=EMPTY 1=GATE 2=START 3=TARGET. For obstacles, tileID:direction (NESW). For start, tileID:direction (NESW)",
+  "tiles": "0100.1000.0000.0000",
+  "obstacles": [
+    "0:0",
+    "0:0",
+    "0:0",
+    "0:0",
+    "0:0",
+    "0:0",
+    "0:0",
+    "0:0"
+  ],
+  "start":"0:0",
+  "target":"15",
+  "target_time":"60"
+}

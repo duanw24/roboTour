@@ -5,15 +5,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
 import framework.Console;
 import framework.mapUtils;
+import framework.util.msgType;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -60,7 +58,7 @@ public class Map {
         tileMap[p.y][p.x]=t;
     }
     public void reset() {
-        readMap(new File("src/resources/maps/emptymap.json"));
+        readMap(new File("src/resources/maps/testmap11-20-23.json"));
     }
 
     @Override
@@ -107,10 +105,7 @@ public class Map {
     }
 
     public void changeTileType(int tileID) {
-        Point p = mapUtils.idToPoint(tileID);
-        System.out.println(p.toString());
-        Tile temp = mapUtils.getTile(p.x,p.y);
-        setTile(temp.getTileID(),mapUtils.regenerateTile(temp.getTileID(),mapUtils.getNextTileType(temp.getTileType())));
+        //setTile(tileID,mapUtils.regenerateTile(tileID,mapUtils.getNextTileType(mapUtils.getTile(tileID).getTileType())));
     }
 
 

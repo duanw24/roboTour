@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Random;
 
 public class mapUtils {
@@ -91,19 +92,20 @@ public class mapUtils {
         }
     }
 
-    public static Tile regenerateTile(int id, tileType tType) {
-        switch (tType) {
+    public static void nextTile(int id) {
+        Tile temp=getTile(id);
+        switch (temp.getTileType()) {
             case EMPTY -> {
-                return new Tile(tileType.EMPTY, wallType.EMPTY,wallType.EMPTY,wallType.EMPTY,wallType.EMPTY,id);
+                theMap.setTile(id,new Tile(tileType.TARGET, wallType.EMPTY,wallType.EMPTY,wallType.EMPTY,wallType.EMPTY,id));
             }
             case START -> {
-                return new Tile(tileType.START,wallType.EMPTY,wallType.EMPTY,wallType.EMPTY,wallType.EMPTY,id);
+                theMap.setTile(id, new Tile(tileType.GATE,wallType.GATE,wallType.GATE,wallType.GATE,wallType.GATE,id));
             }
             case TARGET -> {
-                return new Tile(tileType.TARGET,wallType.EMPTY,wallType.EMPTY,wallType.EMPTY,wallType.EMPTY,id);
+                theMap.setTile(id, new Tile(tileType.START,wallType.EMPTY,wallType.EMPTY,wallType.EMPTY,wallType.EMPTY,id));
             }
             case GATE -> {
-                return new Tile(tileType.GATE,wallType.GATE,wallType.GATE,wallType.GATE,wallType.GATE,id);
+                theMap.setTile(id, new Tile(tileType.EMPTY,wallType.EMPTY,wallType.EMPTY,wallType.EMPTY,wallType.EMPTY,id));
             }
             default -> {throw new RuntimeException("you provided wrong tiletype you fucking dumbass");}
         }
@@ -124,13 +126,20 @@ public class mapUtils {
         return temp==3?tileType.EMPTY:tileTypes.get(temp+1);
     }
 
-    public static Tile getTile(int x,int y) {
-        return theMap.getTileMap()[y][x];
+    public static Tile getTile(Point p) {
+        return theMap.getTileMap()[p.y][p.x];
+    }
+
+    //#TODO THE FUCK IS GOING ON HERE
+    // SWITCHED p.y and p.x now shit works half the fucking time
+    // i wanna fucking kill myself
+    public static Tile getTile(int id) {
+        return getTile(idToPoint(id));
     }
 
     public static void export() {
         try {
-            BufferedWriter bfr = new BufferedWriter(new FileWriter(new File("src/resources/maps/"+(Math.random()*10000000)+".json")));
+            BufferedWriter bfr = new BufferedWriter(new FileWriter(new File("src/resources/maps/"+(System.currentTimeMillis())+".json")));
             String template = "{\n" +
                     "  \"HOW TO USE THIS FILE\": \"For tiles, 0=EMPTY 1=GATE 2=START 3=TARGET. For obstacles, tileID:direction (NESW). For start, tileID:direction (NESW)\",\n" +
                     "  \"tiles\": \"1000.1110.0000.0000\",\n" +
