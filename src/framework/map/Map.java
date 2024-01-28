@@ -1,6 +1,6 @@
 package framework.map;
 
-import ai.Robot;
+import framework.Robot;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -8,12 +8,14 @@ import com.google.gson.JsonParser;
 import framework.Console;
 import framework.mapUtils;
 import framework.util.msgType;
+import framework.util.IdiotException;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class Map {
@@ -80,25 +82,25 @@ public class Map {
             BufferedReader bfr = new BufferedReader(new FileReader(file));
             String temp = bfr.lines().collect(Collectors.joining("\n"));
             System.out.println(temp);
-        JsonObject jsO = JsonParser.parseString(temp).getAsJsonObject();
-        String[] split = jsO.get("tiles").getAsString().split("\\.");
-        int id=0;
-        for(int i=0;i<4;i++) {
-            for(int j=0;j<4;j++,id++) {
-                tileMap[j][i]=mapUtils.processT(id,split[i].charAt(j),j,i);
+            JsonObject jsO = JsonParser.parseString(temp).getAsJsonObject();
+            String[] split = jsO.get("tiles").getAsString().split("\\.");
+            int id=0;
+            for(int i=0;i<4;i++) {
+                for(int j=0;j<4;j++,id++) {
+                    tileMap[j][i]=mapUtils.processT(id,split[i].charAt(j),j,i);
+                }
             }
-        }
-        ArrayList<Point> obstacles = new ArrayList<>();
-        JsonArray jsA = jsO.get("obstacles").getAsJsonArray();
-        jsA.iterator().forEachRemaining(t->{
-            obstacles.add(new Point(Integer.parseInt(t.getAsString().split(":")[0]),Integer.parseInt(t.getAsString().split(":")[1])));
-        });
-        obstacles.forEach(t->{
-            Point tempP = mapUtils.processC(t.x);
-            Wall tempW = (new Wall(wallType.OBSTACLE,mapUtils.processD((char) (t.y+'0')), tempP.x, tempP.y));
-            oList.add(tempW);
-            tileMap[tempP.y][tempP.x].setWall(mapUtils.processD((char) (t.y+'0')),new Wall(wallType.OBSTACLE,mapUtils.processD((char) (t.y+'0')), tempP.x, tempP.y));
-        });
+            ArrayList<Point> obstacles = new ArrayList<>();
+            JsonArray jsA = jsO.get("obstacles").getAsJsonArray();
+            jsA.iterator().forEachRemaining(t->{
+                obstacles.add(new Point(Integer.parseInt(t.getAsString().split(":")[0]),Integer.parseInt(t.getAsString().split(":")[1])));
+            });
+            obstacles.forEach(t->{
+                Point tempP = mapUtils.processC(t.x);
+                Wall tempW = (new Wall(wallType.OBSTACLE,mapUtils.processD((char) (t.y+'0')), tempP.x, tempP.y));
+                oList.add(tempW);
+                tileMap[tempP.y][tempP.x].setWall(mapUtils.processD((char) (t.y+'0')),new Wall(wallType.OBSTACLE,mapUtils.processD((char) (t.y+'0')), tempP.x, tempP.y));
+            });
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -118,23 +120,22 @@ public class Map {
         return true;
     }
 
-    public boolean isLegal(Point end) {
+
+    public boolean isLegal(Point end) throws IdiotException {
         //iterative raycast check (line intersection)
-        if(end.x>=50||end.x<=0||end.y>=50||end.y<=0) {System.out.println("out of bounds dumbass");return false;}
-        for(Wall wall : oList) {
-            if(wall.getType().equals(wallType.OBSTACLE)) {
-                Line2D l1 = new Line2D.Float(theRobot.getPos(),end);
-                Line2D l2;
-                if(wall.getDir().equals(Direction.NORTH) || wall.getDir().equals(Direction.SOUTH)) {
-                    l2 = new Line2D.Float(new Point(wall.getxLit(),wall.getyLit()),new Point(wall.getxLit()+150,wall.getyLit()));
-                }else if(wall.getDir().equals(Direction.EAST) || wall.getDir().equals(Direction.WEST)) {
-                    l2 = new Line2D.Float(new Point(wall.getxLit(),wall.getyLit()),new Point(wall.getxLit(),wall.getyLit()+150));
-                } else {
-                    throw new RuntimeException("Unrecognized direction");
+        AtomicBoolean flag= new AtomicBoolean(false);
+        if(end.x>=50||end.x<=0||end.y>=50||end.y<=0) throw new IdiotException("out of bounds idiot");
+        oList.forEach(i-> {
+                Line2D l1,l2 = null;
+                l1 = new Line2D.Float(theRobot.getPos(),end);
+                if(i.getDir().equals(Direction.NORTH)||i.getDir().equals(Direction.SOUTH)) {
+                    l2 = new Line2D.Float(new Point(i.getxLit(),i.getyLit()),new Point(i.getxLit()+150,i.getyLit()));
+                }else if(i.getDir().equals(Direction.EAST)||i.getDir().equals(Direction.WEST)) {
+                    l2 = new Line2D.Float(new Point(i.getxLit(),i.getyLit()),new Point(i.getxLit(),i.getyLit()+150));
                 }
-                if(l1.intersectsLine(l2)) {return false;}
-            }
-        }
-        return true;
+                if(l1.intersectsLine(l2))
+                    flag.set(true);
+        });
+        return flag.get();
     }
 }

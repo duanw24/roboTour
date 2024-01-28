@@ -183,17 +183,20 @@ public class guiPanel extends JPanel {
 
         g2.setStroke(new BasicStroke(10));
 
+        int x1 = tile.getX()*150+90;
+        int y1 = tile.getY()*150+90;
+
         g2.setColor(processWall(N.getType()));
-        g2.drawLine(N.getxLit(),N.getyLit(),N.getxLit()+150,N.getyLit());
+        g2.drawLine(x1,y1,x1+150,y1);
 
         g2.setColor(processWall(E.getType()));
-        g2.drawLine(E.getxLit(),E.getyLit(),E.getxLit(),E.getyLit()+150);
+        g2.drawLine(x1,y1,x1,y1+150);
 
         g2.setColor(processWall(S.getType()));
-        g2.drawLine(S.getxLit(),S.getyLit(),S.getxLit()+150,S.getyLit());
+        g2.drawLine(x1+150,y1+150,x1+150,y1);
 
         g2.setColor(processWall(W.getType()));
-        g2.drawLine(W.getxLit(),W.getyLit(),W.getxLit(),W.getyLit()+150);
+        g2.drawLine(x1+150,y1+150,x1,y1+150);
 
         switch(tile.getTileType()) {
             case EMPTY -> g2.setColor(new Color(211,211,211));

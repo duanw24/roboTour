@@ -20,6 +20,13 @@ public class Wall {
     public Direction getDir() {
         return dir;
     }
+
+    public int getxCoord() {
+        return xCoord;
+    }
+    public int getyCoord() {
+        return yCoord;
+    }
     private Direction dir;
 
     public Wall(wallType type, Direction dir, int xCoord, int yCoord) {
@@ -27,25 +34,6 @@ public class Wall {
         this.yCoord=y;
         this.dir=dir;
         this.type = type;
-        switch(dir) {
-            case NORTH -> {
-                this.xLit=90+(150*xCoord);
-                this.yLit=90+(150*yCoord);
-            }
-            case EAST -> {
-                this.xLit=240+150*xCoord;
-                this.yLit=90+150*yCoord;
-            }
-            case SOUTH -> {
-                this.xLit=90+150*xCoord;
-                this.yLit=240+150*yCoord;
-            }
-            //unflipped west to simplify raycasting
-            case WEST -> {
-                this.xLit=90+150*xCoord;
-                this.yLit=90+150*yCoord;
-            }
-        }
     }
 
 

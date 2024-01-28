@@ -1,4 +1,4 @@
-package ai;
+package framework;
 
 import java.awt.*;
 

@@ -1,5 +1,6 @@
 package framework.map;
 
+import v2.ai.Node;
 import framework.mapUtils;
 
 import java.awt.*;
@@ -17,7 +18,7 @@ public class Tile {
     private tileType tileType;
 
     private int xCoord,yCoord;
-
+    private Node[][] pfNodes = new Node[25][25];
 
     public Tile(tileType tileType, wallType N, wallType E, wallType S, wallType W, int tileID) {
         //should go top right down left, counterclockwise!!!
