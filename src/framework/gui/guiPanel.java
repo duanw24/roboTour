@@ -13,9 +13,9 @@ import javax.swing.*;
 
 public class guiPanel extends JPanel {
 
-    public static void main(String[] guiTests) {
+ /*   public static void main(String[] guiTests) {
         System.out.println(processXYt(new Point(90,90)));
-    }
+    }*/
 
     /*
     * Tile 0: 90,90
@@ -38,14 +38,14 @@ public class guiPanel extends JPanel {
 
     private final Map theMap;
 
-    /*public static void main(String[] f) {
+    public static void main(String[] f) {
         JFrame frame = new JFrame("Track Editor Alpha 0.1");
-        frame.getContentPane().add(new guiPanel());
+        frame.getContentPane().add(new guiPanel(null));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 800);
         frame.setVisible(true);
-        new controlPanel();
-    }*/
+       // new controlPanel();
+    }
 
     private int width = 800, height = 800;
 

@@ -1,6 +1,10 @@
 package v2;
 
+import framework.map.Direction;
 import javafx.util.Pair;
+import v2.ai.Dijkstra;
+import v2.ai.Graph;
+import v2.ai.Node;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -14,9 +18,10 @@ class Main {
         Node end = theGraph.getNode(99,99);
 
         //#TEST for CASE:nopath
-        theGraph.addWall(0,0,Direction.EAST);
-        theGraph.addWall(0,1,Direction.EAST);
-        theGraph.addWall(0,2,Direction.EAST);
+        theGraph.addWall(new Point(0,0), Direction.EAST);
+        theGraph.addWall(new Point(0,1),Direction.EAST);
+        theGraph.addWall(new Point(0,2),Direction.EAST);
+        theGraph.addWall(new Point(0,3),Direction.EAST);
 
         //#TODO
         /* whadafuck 199 throws err, prolly +49 render in render()
@@ -33,6 +38,6 @@ Process finished with exit code 1*/
         System.out.println("Path length: "+p.getKey());
         System.out.println("Path: "+ Arrays.toString(p.getValue()));
         System.out.println("Time: "+(System.currentTimeMillis()-t1)+"ms");
-        theGraph.render(p.getValue());
+        System.out.println(p.getValue());
     }
 }

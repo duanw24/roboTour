@@ -1,10 +1,6 @@
-package v2.ai;
+package v3.ai;
 
-import framework.map.Direction;
 import javafx.util.Pair;
-import v2.ai.Dijkstra;
-import v2.ai.Graph;
-import v2.ai.Node;
 
 import java.awt.*;
 import java.util.Arrays;
