@@ -5,15 +5,64 @@ import v3.ai.Dijkstra;
 import v3.ai.Graph;
 import v3.ai.Node;
 import v3.gui.guiFrame;
+import v3.gui.guiPanel;
 import v3.ai.Direction;
 
 import java.awt.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.function.IntFunction;
 
 public class Main {
 
     public static void main(String[] balls) {
+        ArrayList<Pair<Point,Direction>> walls = new ArrayList<>();
+        //#TODO rendering (3,y) NORTH doesn't work with multiple x=3 cases.... oddly specific case
+
+        walls.add(new Pair<>(new Point(1,1), Direction.SOUTH));
+        walls.add(new Pair<>(new Point(1,0), Direction.EAST));
+        walls.add(new Pair<>(new Point(1,1), Direction.EAST));
+        walls.add(new Pair<>(new Point(0,2), Direction.SOUTH));
+        walls.add(new Pair<>(new Point(1,3), Direction.SOUTH));
+        walls.add(new Pair<>(new Point(1,2), Direction.EAST));
+
+        walls.add(new Pair<>(new Point(2,1), Direction.EAST));
+        walls.add(new Pair<>(new Point(2,2), Direction.EAST));
+        walls.add(new Pair<>(new Point(2,3), Direction.EAST));
+
+    /* walls.add(new Pair<>(new Point(0,0), Direction.EAST));
+        walls.add(new Pair<>(new Point(0,1), Direction.EAST));
+        walls.add(new Pair<>(new Point(0,2), Direction.EAST));
+        walls.add(new Pair<>(new Point(1,3), Direction.EAST));
+        walls.add(new Pair<>(new Point(1,2), Direction.EAST));
+        walls.add(new Pair<>(new Point(1,1), Direction.EAST));
+        walls.add(new Pair<>(new Point(2,0), Direction.EAST));
+        walls.add(new Pair<>(new Point(2,1), Direction.EAST));
+        walls.add(new Pair<>(new Point(2,2), Direction.EAST));*/
+
+
+        /*String wall = "0,0,EAST;" +
+                "0,1,EAST;" +
+                "0,2,EAST;" +
+                "1,3,EAST;" +
+                "1,2,EAST;" +
+                "1,1,EAST;" +
+                "2,0,EAST;" +
+                "2,1,EAST;" +
+                "2,2,EAST";
+        Arrays.stream(wall.split(";")).forEach(s -> {
+            String[] split = s.split(",");
+            walls.add(new Pair<>(new Point(Integer.parseInt(split[0]), Integer.parseInt(split[1])), Direction.valueOf(split[2])));
+        });*/
+        Point startpos=new Point(48,85);
+        Point endpos=new Point(0,0);
+        Pathfinder pathfinder = new Pathfinder();
+        pathfinder.run(startpos, endpos, walls, 100, 100);
+
+    }
+       /* public static void main(String[] balls) {
         //3996ms avg 10runs 100res, walls->worstcase, path rendering
         //3839ms without path rendering
         ArrayList<Pair<Point,Direction>> walls = new ArrayList<>();
@@ -28,11 +77,12 @@ public class Main {
         walls.add(new Pair<>(new Point(2,2), Direction.EAST));
 
         run(new Point(0, 0), new Point(99, 99), walls, 100);
-    }
+    }*/
 
 
     public static long run(Point startpos, Point endpos, ArrayList<Pair<Point,Direction>> walls, int resolution) {
-        guiFrame frame = new guiFrame(resolution,resolution);
+        //guiFrame mainframe = new guiFrame(resolution,resolution);
+       /* guiPanel frame = new guiPanel(resolution,resolution);
 
         Graph theGraph = new Graph(resolution,resolution);
         Node start = theGraph.getNode(startpos.x,startpos.y);
@@ -55,7 +105,8 @@ public class Main {
         for(Node n: p.getValue()) {
             frame.updateGraph(new Point(n.getX(),n.getY()), -2);
         }
-        return System.currentTimeMillis()-t1;
+        return System.currentTimeMillis()-t1;*/
+        return 3;
     }
 
    /* public static void main(String[] balls) {

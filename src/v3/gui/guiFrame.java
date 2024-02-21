@@ -1,125 +1,86 @@
 package v3.gui;
 
 import javafx.util.Pair;
+import v3.Pathfinder;
 import v3.ai.Dijkstra;
 import v3.ai.Direction;
 import v3.ai.Graph;
 import v3.ai.Node;
+import v3.util.guiUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.stream.Collectors;
-
-import static v3.Main.run;
 
 public class guiFrame extends JFrame {
 
-    public int[][] mapData;
+
     private int mx,my;
-    private int scaledx,scaledy;
-    private int maxDist;
-    public ArrayList<Pair<Point, Direction>> walls = new ArrayList<>();
+    private static guiPanel gp;
+    private static controlPanel cp;
+    private Pathfinder pathfinder;
 
-    public guiFrame(int mx, int my) {
-        Dijkstra.setGui(this);
-        mapData=new int[mx][my];
-        this.mx=mx;
-        this.my=my;
-        this.maxDist= (int)(mx*1.4);
-        scaledx=800/mx;
-        scaledy=800/my;
-        for(int i=0;i<mx;i++) {
-            for(int j=0;j<my;j++) {
-                mapData[i][j]=-1;
+    //im so fucking done with this shit rn
+    public  JTextArea stats;
+
+    public guiFrame(Pathfinder pathfinder, int mx, int my) {
+        this.setLayout(null);
+        this.pathfinder = pathfinder;
+        //cp=new controlPanel(pathfinder);
+        //cp.setLocation(800,400);
+        gp=new guiPanel(mx,my, pathfinder,this);
+
+
+        stats = guiUtils.textAreaify(new JTextArea());
+        stats.setEditable(false);
+        stats.setLineWrap(true);
+        stats.setSize(350,375);
+        stats.setLocation(825,25);
+
+        JButton sb = new JButton("Rerun");
+        sb.setBackground(new Color(7,27,72));
+        sb.setForeground(new Color(205, 205, 205));
+        sb.setFont(guiUtils.customFont(20f));
+        sb.setBorder(BorderFactory.createRaisedSoftBevelBorder());
+        sb.setSize(220, 60);
+        sb.setLocation(825,400);
+        sb.setOpaque(true);
+        sb.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("rerun");
+                pathfinder.rerun();
             }
-        }
-
-
+        });
+        this.add(sb);
 
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(1200, 900);
+        this.add(stats);
+        this.add(gp);
+        //this.add(cp);
+        this.setSize(1200,900);
         this.setVisible(true);
-    }
-
-
-    ArrayList<Point> current;
-    public void paint(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g;
-        this.setBackground(new Color(17,23,41));
-        //scales on dist function
-        for(int i=0;i<mx;i++) {
-            for(int j=0;j<my;j++) {
-                if(mapData[i][j]==-1) {
-                    g2d.setColor(Color.BLACK);
-                } else if(mapData[i][j]==-2) {
-                   g2d.setColor(Color.BLUE);
-                } else {
-                    if(mapData[i][j]>255)
-                        mapData[i][j]=255;
-                    g2d.setColor(gradientGen(mapData[i][j],0,maxDist));
-
-                }
-                g2d.fillRect(i*scaledx,j*scaledy,scaledx,scaledy);
-
-            }
-        }
-
-        for(Pair<Point,Direction> p:walls) {
-            g2d.setColor(Color.BLACK);
-            Point point = p.getKey();
-            switch(p.getValue()) {
-                case NORTH -> {
-                    g2d.fillRect(point.x*mx/4*scaledx,(point.y+1)*my/4*scaledy,mx/4*scaledx,scaledy/2);
-                    return;
-                }
-                case EAST -> {
-                    g2d.fillRect((point.x+1)*mx/4*scaledx,point.y*my/4*scaledy,scaledx/2,my/4*scaledy);
-                }
-                case SOUTH -> {
-                    g2d.fillRect(point.x*mx/4*scaledx,point.y*my/4*scaledy,mx/4*scaledx,scaledy/2);
-                }
-                case WEST -> {
-                    g2d.fillRect(point.x*mx/4*scaledx,point.y*my/4*scaledy,scaledx/2,my/4*scaledy);
-                }
-            }
-        }
-        if(current!=null) {
-            for(Point p:current) {
-                g2d.setColor(Color.GREEN);
-                g2d.fillRect(p.x*scaledx,p.y*scaledy,scaledx,scaledy);
-            }
-        }
-    }
-
-    public void updateGraph(Point p, int i) {
-        mapData[p.x][p.y]=i;
+        this.setResizable(false);
         repaint();
     }
 
-    public void addWall(Point pt,Direction dir) {
-        walls.add(new Pair<>(pt,dir));
+    public void paint(Graphics g) {
+        setBackground(new Color(17,23,41));
     }
 
-    public void currentPath(ArrayList<Node> current) {
-        if(current==null) {
-            this.current=null;
-            return;
+    public void updatePath(Node[] path) {
+        gp.currentPath(null);
+        for(Node n: path) {
+            gp.updateGraph(new Point(n.getX(),n.getY()), -2);
         }
-       this.current=(ArrayList<Point>) current.stream().map(n -> new Point(n.getX(),n.getY())).collect(Collectors.toList());
     }
 
-    private Color gradientGen(int value, int min, int max) {
-        //normalize
-        //log bad
-        Color c1 = new Color(96, 239, 255);
-        Color c2 = new Color(0, 97, 255);
 
-        //linear gradient between c1 and c2 using maxDist as max
-        int r = (int) ((c2.getRed() - c1.getRed()) * ((double) value / max) + c1.getRed());
-        int g = (int) ((c2.getGreen() - c1.getGreen()) * ((double) value / max) + c1.getGreen());
-        int b = (int) ((c2.getBlue() - c1.getBlue()) * ((double) value / max) + c1.getBlue());
-        return new Color(r, g, b);
-    }
+
+
 }

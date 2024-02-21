@@ -91,10 +91,5 @@ public class Graph {
         return true;
     }
 
-    public int[][] render() {
-        int[][] map = new int[mx][my];
-        ///////////////////////
-        return map;
-    }
 
 }

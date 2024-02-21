@@ -1,7 +1,7 @@
 package v3.ai;
 
 import javafx.util.Pair;
-import v3.gui.guiFrame;
+import v3.gui.guiPanel;
 
 import java.awt.*;
 import java.util.*;
@@ -9,12 +9,12 @@ import java.util.List;
 
 public class Dijkstra {
 
-    private static guiFrame guiFrame;
-    public static void setGui(guiFrame guiFrame) {
-        Dijkstra.guiFrame = guiFrame;
+    private static guiPanel guiPanel;
+    public static void setGui(guiPanel guiPanel) {
+        Dijkstra.guiPanel = guiPanel;
     }
 
-    private int maxDist;
+    public static int checks = 0;
 
     public static Pair<Double, Node[]> dijkstra(Graph g, Node start, Node end) {
         //HashSet <Node> visited = new HashSet<Node>();
@@ -51,6 +51,7 @@ public class Dijkstra {
 
             unvisited.remove(temp);
             for (Node n : g.getNeighbors(temp)) {
+                checks++;
                 if (unvisited.contains(n)) {
                     double alt = temp.getDistance() + g.distance(temp, n);
                     if (alt < n.getDistance()) {
@@ -59,13 +60,13 @@ public class Dijkstra {
                         queue.remove(new Pair<>(n, n.getDistance()));
                         queue.add(new Pair<>(n, n.getDistance()));
 
-                        if(guiFrame!=null) {
+                        if(guiPanel !=null) {
                             //System.out.println("Updating graph @ "+n.getX()+","+n.getY()+" to "+(int)(alt));
                             //n.prev.forEach(p -> guiFrame.updateGraph(new Point(p.getX(), p.getY()), -2));
 
                             //get path taken to current node
-                            guiFrame.currentPath(Objects.requireNonNull(Node.prevPath(n, start)));
-                            guiFrame.updateGraph(new Point(n.getX(), n.getY()), (int) Point.distance(end.getX(), end.getY(), n.getX(), n.getY()));
+                            guiPanel.currentPath(Objects.requireNonNull(Node.prevPath(n, start)));
+                            guiPanel.updateGraph(new Point(n.getX(), n.getY()), (int) Point.distance(end.getX(), end.getY(), n.getX(), n.getY()));
 
                         } else {
                             System.out.println("guiFrame not found");
