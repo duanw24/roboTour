@@ -1,6 +1,6 @@
 package v2;
 
-import framework.map.Direction;
+import v1.framework.map.Direction;
 import javafx.util.Pair;
 import v2.ai.Dijkstra;
 import v2.ai.Graph;

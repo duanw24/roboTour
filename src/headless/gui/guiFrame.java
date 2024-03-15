@@ -1,9 +1,9 @@
-package v3.gui;
+package headless.gui;
 
+import headless.Pathfinder;
+import headless.ai.Node;
+import headless.util.guiUtils;
 import lombok.Getter;
-import v3.Pathfinder;
-import v3.ai.Node;
-import v3.util.guiUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -84,6 +84,7 @@ public class guiFrame extends JFrame {
     public void updateCurrent(ArrayList<Node> current) {
         if(current==null) {
             gp.getCurrent().clear();
+            gp.repaint();
             return;
         }
         gp.getCurrent().clear();

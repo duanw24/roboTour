@@ -1,11 +1,10 @@
-package v3;
+package headless;
 
+import headless.ai.Direction;
+import headless.ai.pathfinders.D1;
+import headless.util.cliUtils;
+import headless.util.pathUtils;
 import javafx.util.Pair;
-import v3.ai.*;
-import v3.ai.pathfinders.D1;
-import v3.ai.pathfinders.D2;
-import v3.ai.pathfinders.D3;
-import v3.ai.pathfinders.D4;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -13,11 +12,16 @@ import java.util.ArrayList;
 public class Main {
 
     public static void main(String[] balls) {
-        ArrayList<Pair<Point,Direction>> walls = new ArrayList<>();
+        ArrayList<Pair<Point, Direction>> walls = new ArrayList<>();
         //#TODO rendering (3,y) NORTH doesn't work with multiple x=3 cases.... oddly specific case
         //#TODO TEST NEW CASES FOR GREEDY FIX D3
 
         walls.add(new Pair<>(new Point(1,1), Direction.SOUTH));
+        walls.add(new Pair<>(new Point(1,0), Direction.WEST));
+        walls.add(new Pair<>(new Point(2,1), Direction.SOUTH));
+        walls.add(new Pair<>(new Point(2,0), Direction.EAST));
+
+        /*walls.add(new Pair<>(new Point(1,1), Direction.SOUTH));
         walls.add(new Pair<>(new Point(1,0), Direction.EAST));
         walls.add(new Pair<>(new Point(1,1), Direction.EAST));
         walls.add(new Pair<>(new Point(0,2), Direction.SOUTH));
@@ -26,7 +30,7 @@ public class Main {
 
         walls.add(new Pair<>(new Point(2,1), Direction.EAST));
         walls.add(new Pair<>(new Point(2,2), Direction.EAST));
-        walls.add(new Pair<>(new Point(2,3), Direction.EAST));
+        walls.add(new Pair<>(new Point(2,3), Direction.EAST));*/
 
 
   /*  walls.add(new Pair<>(new Point(0,0), Direction.EAST));
@@ -50,13 +54,15 @@ public class Main {
             walls.add(new Pair<>(guiUtils.idToPos(temp[0]),guiUtils.balls(temp[1])));
         });*/
 
-
+        //System.out.println(cliUtils.getBoard());
 
         Point startpos=new Point(0,0);
-        Point endpos=new Point(99,99);
-        Pathfinder pathfinder = new Pathfinder(new D1(),3);
+        Point endpos=new Point(99,0);
+        Pathfinder pathfinder = new Pathfinder(new D1(),2);
         pathfinder.run(startpos, endpos, walls, 100, 100);
-
+        ArrayList <Pair<Double,Double>> pPath = pathUtils.polarCoords(pathfinder.getFinalPath());
+        String path = pathUtils.sketchPath(pPath);
+        cliUtils.runBot(path);
     }
        /* public static void main(String[] balls) {
         //3996ms avg 10runs 100res, walls->worstcase, path rendering
@@ -76,7 +82,7 @@ public class Main {
     }*/
 
 
-    public static long run(Point startpos, Point endpos, ArrayList<Pair<Point,Direction>> walls, int resolution) {
+    public static long run(Point startpos, Point endpos, ArrayList<Pair<Point, Direction>> walls, int resolution) {
         //guiFrame mainframe = new guiFrame(resolution,resolution);
        /* guiPanel frame = new guiPanel(resolution,resolution);
 

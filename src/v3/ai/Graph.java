@@ -1,6 +1,7 @@
 package v3.ai;
 
 import javafx.util.Pair;
+import lombok.Getter;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+@Getter
 public class Graph {
     public List<Pair<Point, Direction>> walls = new ArrayList<Pair<Point, Direction>>();
     private int mx,my;
@@ -17,8 +19,12 @@ public class Graph {
     //matrix of nodes, 1cm=1 unit
     private Node[][] nodes;
 
-    HashSet<Node> nodeSet;
-    public Graph(int mx, int my) {
+    private HashSet<Node> nodeSet;
+
+    private int resolution = 2;
+
+    public Graph(int mx, int my, int resolution) {
+        this.resolution=resolution;
         this.mx=mx;
         this.my=my;
         this.mtx=mx/4;
@@ -48,20 +54,22 @@ public class Graph {
     //range<2: 2652ms,
     //range<3: 2826ms,
     //range infinite: 5076ms.
+    ///////
     public ArrayList<Node> getNeighbors(Node n) {
         ArrayList<Node> neighbors = new ArrayList<>();
         for(Node node : nodeSet) {
             if(node==n||!nodeRaycheck(n.where(),node.where()))
                 continue;
-            if(distance(node, n)<2) {
+            ///////////////////////////
+            if(distance(node, n)<resolution) {
                 neighbors.add(node);
             }
         }
         return neighbors;
     }
 
-    public double distance(Node a, Node b) {
-        return Point.distance(a.getX(), a.getY(), b.getX(), b.getY());
+    public static double distance(Node a, Node b) {
+        return a.where().distance(b.where());
     }
     public boolean nodeRaycheck(Point2D a, Point2D b) {
         //checks whether a line drawn between the two points will intersect any of the walls

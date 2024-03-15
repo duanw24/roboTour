@@ -1,15 +1,16 @@
-package v3.gui;
+package headless.gui;
 
+import headless.Pathfinder;
+import headless.ai.Direction;
+import headless.ai.Node;
+import headless.util.guiUtils;
 import javafx.util.Pair;
 import lombok.Getter;
-import v3.Pathfinder;
-import v3.ai.Direction;
-import v3.ai.Node;
-import v3.util.guiUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 @Getter
 
@@ -47,33 +48,26 @@ public class guiPanel extends JPanel {
         this.setBackground(new Color(17,23,41));
         g2d.setStroke(new BasicStroke(5));
 
-        if(pathfinder.isDone()) {
-            Node[] temp = pathfinder.getFinalPath();
-            for(int i=0;i<temp.length-1;i++) {
-                g2d.setColor(Color.BLUE);
-                g2d.setStroke(new BasicStroke(7));
-                g2d.drawLine(temp[i].getX()*scaledx,temp[i].getY()*scaledy,temp[i+1].getX()*scaledx,temp[i+1].getY()*scaledy);
-            }
-        }
         g2d.setColor(Color.BLACK);
         //scales on dist function
         for(int i=0;i<mx;i++) {
             for(int j=0;j<my;j++) {
                 if(mapData[i][j]==-1) {
                     g2d.setColor(Color.BLACK);
+                } else if(mapData[i][j]==-2) {
+                    g2d.setColor(Color.BLUE);
                 } else if(mapData[i][j]==-3) {
                     g2d.setColor(Color.RED);
-                } else {
+                }else {
                     if(mapData[i][j]>255)
                         mapData[i][j]=255;
                     g2d.setColor(guiUtils.gradientGen(mapData[i][j],maxDist));
-
                 }
                 g2d.fillRect(i*scaledx,j*scaledy,scaledx,scaledy);
             }
         }
 
-        for(Pair<Point,Direction> p:pathfinder.getWalls()) {
+        for(Pair<Point, Direction> p:pathfinder.getWalls()) {
             g2d.setColor(Color.BLACK);
             Point point = p.getKey();
             switch(p.getValue()) {
@@ -97,6 +91,19 @@ public class guiPanel extends JPanel {
                 g2d.setColor(Color.GREEN);
                 g2d.setStroke(new BasicStroke(7));
                 g2d.drawLine(current.get(i).x*scaledx,current.get(i).y*scaledy,current.get(i+1).x*scaledx,current.get(i+1).y*scaledy);
+            }
+        }
+        if(pathfinder.isDone()) {
+            System.out.println("Pathfinder is done");
+            Node[] temp = pathfinder.getFinalPath();
+            System.out.println(Arrays.toString(temp));
+            System.out.println(Arrays.toString(temp));
+            System.out.println(Arrays.toString(temp));
+            System.out.println(Arrays.toString(temp));
+            for(int i=0;i<temp.length-1;i++) {
+                g2d.setColor(Color.RED);
+                g2d.setStroke(new BasicStroke(7));
+                g2d.drawLine(temp[i].getX()*scaledx,temp[i].getY()*scaledy,temp[i+1].getX()*scaledx,temp[i+1].getY()*scaledy);
             }
         }
     }

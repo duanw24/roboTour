@@ -1,9 +1,8 @@
-package v3.ai;
+package headless.ai;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 public class Node {
     private double distance;

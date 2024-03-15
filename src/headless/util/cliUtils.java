@@ -1,0 +1,167 @@
+package headless.util;
+
+import lombok.SneakyThrows;
+
+import java.io.*;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
+public class cliUtils {
+
+    @SneakyThrows
+    public static void main(String[] args) {
+       runBot("tF(100);");
+    }
+
+    public static void runBot(String dirs)  {
+        try {
+            String board = getBoard();
+            File sketch = new File(System.getProperty("user.dir") + "/src/resources/auto_go/auto_go.ino");
+            BufferedWriter bfr = new BufferedWriter(new FileWriter(sketch,false));
+            bfr.write(auto_go);
+            bfr.write(dirs+"}");
+            bfr.flush();
+            c_Upload(sketch, board);
+        } catch(Exception e) {
+            System.exit(0);
+        }
+    }
+
+
+    public static String getBoard() {
+        String cmd = "arduino-cli board list";
+        System.out.println("Running: " + cmd);
+        try {
+            Process p = Runtime.getRuntime().exec(cmd);
+            p.waitFor();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                     if (line.contains("Arduino")) {
+                        return line.split(" ")[0];
+                    }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("No Arduino board found");
+        }
+        return null;
+    }
+
+    public static boolean c_Upload(File sketch, String board) {
+        String cmd = "arduino-cli compile -b arduino:avr:uno -p "+board+" -u "+sketch.getPath();
+        System.out.println("Running: " + cmd);
+        try {
+            Process p = Runtime.getRuntime().exec(cmd);
+            p.waitFor();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println();
+                if (line.contains("Sketch uses")) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("No Arduino board found");
+        }
+        return false;
+    }
+
+    static String auto_go = """
+            //    The direction of the car's movement
+                       //  ENA   ENB   IN1   IN2   IN3   IN4   Description
+                       //  HIGH  HIGH  HIGH  LOW   LOW   HIGH  Car is runing forward
+                       //  HIGH  HIGH  LOW   HIGH  HIGH  LOW   Car is runing back
+                       //  HIGH  HIGH  LOW   HIGH  LOW   HIGH  Car is turning left
+                       //  HIGH  HIGH  HIGH  LOW   HIGH  LOW   Car is turning right
+                       //  HIGH  HIGH  LOW   LOW   LOW   LOW   Car is stoped
+                       //  HIGH  HIGH  HIGH  HIGH  HIGH  HIGH  Car is stoped
+                       //  LOW   LOW   N/A   N/A   N/A   N/A   Car is stoped
+                       
+                       
+                       //define L298n module IO Pin
+                       #define ENB 5
+                       #define IN1 7
+                       #define IN2 8
+                       #define IN3 9
+                       #define IN4 11
+                       #define ENA 6
+                       
+                       #define DCONST 14.2857142857
+                       #define ACONST 2.5
+                       
+                       void tF(int dist) {
+                         delay(100);
+                         stop();
+                         delay(100);
+                         forward();
+                         delay((dist*DCONST));
+                         stop();
+                       }
+                       
+                       void tTR(int theta) {
+                         delay(100);
+                         stop();
+                         delay(100);
+                         if(theta>0) {
+                           right();
+                         } else {
+                           left();
+                         }
+                         delay(abs(theta*ACONST));
+                         stop();
+                       }
+                       
+                       void stop() {
+                          digitalWrite(ENA, LOW);    //enable L298n A channel
+                         digitalWrite(ENB, LOW);    //enable L298n B channel
+                       }
+                       
+                       void forward(){
+                         digitalWrite(ENA, HIGH);    //enable L298n A channel
+                         digitalWrite(ENB, HIGH);    //enable L298n B channel
+                         digitalWrite(IN1, HIGH);    //set IN1 hight level
+                         digitalWrite(IN2, LOW);     //set IN2 low level
+                         digitalWrite(IN3, LOW);     //set IN3 low level
+                         digitalWrite(IN4, HIGH);    //set IN4 hight level
+                         Serial.println("Forward");  //send message to serial monitor
+                       }
+                       
+                       void back(){
+                         digitalWrite(ENA, HIGH);
+                         digitalWrite(ENB, HIGH);
+                         digitalWrite(IN1, LOW);
+                         digitalWrite(IN2, HIGH);
+                         digitalWrite(IN3, HIGH);
+                         digitalWrite(IN4, LOW);
+                         Serial.println("Back");
+                       }
+                       
+                       void left(){
+                         digitalWrite(ENA, HIGH);
+                         digitalWrite(ENB, HIGH);
+                         digitalWrite(IN1, LOW);
+                         digitalWrite(IN2, HIGH);
+                         digitalWrite(IN3, LOW);
+                         digitalWrite(IN4, HIGH);
+                         Serial.println("Left");
+                       }
+                       
+                       void right(){
+                         digitalWrite(ENA, HIGH);
+                         digitalWrite(ENB, HIGH);
+                         digitalWrite(IN1, HIGH);
+                         digitalWrite(IN2, LOW);
+                         digitalWrite(IN3, HIGH);
+                         digitalWrite(IN4, LOW);
+                         Serial.println("Right");
+                       }
+                       
+                       void loop() {}
+                       
+                       void setup() {
+                         Serial.begin(9600);\s
+                         stop();
+                        //WRITE// 
+            """;
+}

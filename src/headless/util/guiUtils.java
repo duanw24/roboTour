@@ -1,11 +1,10 @@
-package v3.util;
+package headless.util;
 
-import v3.ai.Direction;
+import headless.ai.Direction;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.io.IOException;
 
 public class guiUtils {
 
@@ -39,16 +38,16 @@ public class guiUtils {
     public static JTextArea textAreaify(JTextArea textArea) {
         textArea.setPreferredSize(new Dimension(220, 30));
 
-        textArea.setBackground(new java.awt.Color(0, 28, 75));
-        textArea.setForeground(new java.awt.Color(205, 205, 205));
+        textArea.setBackground(new Color(0, 28, 75));
+        textArea.setForeground(new Color(205, 205, 205));
         textArea.setFont(guiUtils.customFont(14f));
-        textArea.setBorder(BorderFactory.createLineBorder(new java.awt.Color(17, 23, 41), 2));
+        textArea.setBorder(BorderFactory.createLineBorder(new Color(17, 23, 41), 2));
         return textArea;
     }
 
     public static JButton buttonify(JButton button) {
-        button.setBackground(new java.awt.Color(0, 255, 145));
-        button.setForeground(new java.awt.Color(205, 205, 205));
+        button.setBackground(new Color(0, 255, 145));
+        button.setForeground(new Color(205, 205, 205));
         button.setFont(guiUtils.customFont(20f));
         button.setBorder(BorderFactory.createRaisedSoftBevelBorder());
         return button;

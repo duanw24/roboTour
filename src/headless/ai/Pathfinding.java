@@ -1,17 +1,9 @@
-package v2.ai;
-
-import v1.framework.map.Direction;
-import javafx.util.Pair;
-import v2.ai.Dijkstra;
-import v2.ai.Graph;
-import v2.ai.Node;
-
-import java.awt.*;
-import java.util.Arrays;
+package headless.ai;
 
 class Pathfinding {
+    //i forgor what this class is for... 💀
     public static void main(String[] args) {
-        Graph theGraph = new Graph(100,100);
+       /* Graph theGraph = new Graph(100,100);
         Node start = theGraph.getNode(0,0);
         Node end = theGraph.getNode(99,99);
 
@@ -19,9 +11,9 @@ class Pathfinding {
         theGraph.addWall(new Point(0,0), Direction.EAST);
         theGraph.addWall(new Point(0,1), Direction.EAST);
         theGraph.addWall(new Point(0,2), Direction.EAST);
-        Pair p = Dijkstra.dijkstra(theGraph, start, end);
+        Pair p = D2.dijkstra(theGraph, start, end);
         System.out.println("Path length: "+p.getKey());
         System.out.println("Path: "+ Arrays.toString((Node[])p.getValue()));
-        System.out.println("Time: "+(System.currentTimeMillis()-t1)+"ms");
+        System.out.println("Time: "+(System.currentTimeMillis()-t1)+"ms");*/
     }
 }
