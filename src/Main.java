@@ -1,6 +1,3 @@
-import v1.framework.Robot;
-import v1.framework.gui.guiPanel;
-import v1.framework.map.Map;
 
 import javax.swing.*;
 import java.awt.*;

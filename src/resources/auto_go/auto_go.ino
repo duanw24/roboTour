@@ -11,40 +11,83 @@
 
 //define L298n module IO Pin
 #define ENB 5
+#define ENA 6
+
 #define IN1 7
 #define IN2 8
 #define IN3 9
 #define IN4 11
-#define ENA 6
 
-#define DCONST 14.2857142857
-#define ACONST 2
 
+#define PWMCONSTa 102
+#define PWMCONSTd 51
+
+#define bVal_a 13
+#define mVal_a 7.87401574803
+//
+
+#define bVal_d 3
+#define mVal_d 144.33
+//
+
+
+
+//initial burst
 void tF(int dist) {
-  delay(100);
-  stop();
-  delay(100);
+  delay(200);
   forward();
-  delay((dist*DCONST));
+  delay(50);
+  stop();
+
+  analogWrite(ENA, PWMCONSTd);    //enable L298n A channel
+  analogWrite(ENB, PWMCONSTd);    //enable L298n B channel
+  digitalWrite(IN1, HIGH);    //set IN1 hight level
+  digitalWrite(IN2, LOW);     //set IN2 low level
+  digitalWrite(IN3, LOW);     //set IN3 low level
+  digitalWrite(IN4, HIGH);
+  delay(mVal_d*(dist+bVal_d));
+  Serial.print(mVal_d*(dist+bVal_d));
   stop();
 }
 
 void tTR(int theta) {
-  delay(100);
-  stop();
-  delay(100);
+  delay(200);
+
   if(theta>0) {
     right();
+    delay(50);
+    stop();
+
+    analogWrite(ENA, PWMCONSTa);
+    analogWrite(ENB, PWMCONSTa);
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
+    digitalWrite(IN3, HIGH);
+    digitalWrite(IN4, LOW);
   } else {
     left();
+    delay(50);
+    stop();
+
+    analogWrite(ENA, PWMCONSTa);
+    analogWrite(ENB, PWMCONSTa);
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, HIGH);
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, HIGH);
+
   }
-  delay(abs(theta*ACONST));
+  delay(abs(mVal_a*(theta-bVal_a)));
   stop();
 }
 
 void stop() {
-   digitalWrite(ENA, LOW);    //enable L298n A channel
-  digitalWrite(ENB, LOW);    //enable L298n B channel
+  digitalWrite(ENA, LOW);    
+  digitalWrite(ENB, LOW); 
+  digitalWrite(IN1, LOW);   
+  digitalWrite(IN2, LOW);    
+  digitalWrite(IN3, LOW);    
+  digitalWrite(IN4, LOW);
 }
 
 void forward(){
@@ -87,17 +130,11 @@ void right(){
   Serial.println("Right");
 }
 
-void loop() {}
+void loop() {
+ //WRITE//
+}
 
 void setup() {
-  Serial.begin(9600); 
-  stop();
- //WRITE//
-tTR(45);
-tF(68);
-tTR(-45);
-tF(102);
-tTR(-45);
-tF(65);
-tTR(0);
+  Serial.begin(9600);
+  forward();
 }
